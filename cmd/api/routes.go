@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -20,7 +21,20 @@ func (app *Application) routes() http.Handler {
 		MaxAge:           300,
 	}))
 
+	mux.Use(middleware.Logger)
 	mux.Use(middleware.Heartbeat("/ping"))
+
+	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]string{
+			"author":          "Inu John",
+			"github_username": "https://github.com/inuoshios",
+			"message":         "little jira api...",
+		}
+		marshallResponse, _ := json.MarshalIndent(response, "", "\t")
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(marshallResponse)
+	})
 
 	return mux
 }

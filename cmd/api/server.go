@@ -14,7 +14,7 @@ type Application struct {
 	config *config.Config
 }
 
-func Server() error {
+func Server(app *Application) error {
 	dsn := os.Getenv("DSN")
 	conn, err := database.ConnectToDatabase(dsn)
 	if err != nil {
@@ -22,10 +22,8 @@ func Server() error {
 	}
 	log.Println("database connected successfully...")
 
-	app := Application{
-		config: &config.Config{
-			DB: conn,
-		},
+	app.config = &config.Config{
+		DB: conn,
 	}
 
 	srv := &http.Server{
@@ -33,10 +31,10 @@ func Server() error {
 		Handler: app.routes(),
 	}
 
+	log.Printf("server started at port %s", os.Getenv("PORT"))
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err.Error())
 	}
-	log.Println("server running successfully")
 
-	return nil
+	return err
 }

@@ -15,7 +15,8 @@ func init() {
 
 func main() {
 	fmt.Println("Little Jira API using Golang...")
-	if err := Server(); err != nil {
+	app := &Application{}
+	if err := Server(app); err != nil {
 		log.Println(err.Error())
 	}
 }
