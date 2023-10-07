@@ -1,30 +1,42 @@
 package main
 
 import (
-	"database/sql"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 
+	"github.com/inuoshios/little-jira/internal/config"
 	"github.com/inuoshios/little-jira/internal/database"
-	"github.com/joho/godotenv"
 )
 
 type Application struct {
-	DB *sql.DB
+	config *config.Config
 }
 
-func Server() (*sql.DB, error) {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
+func Server() error {
 	dsn := os.Getenv("DSN")
 	conn, err := database.ConnectToDatabase(dsn)
 	if err != nil {
-		log.Fatalf("Eror connecting to DB %s", err.Error())
+		log.Fatalf("error connecting to DB %s", err.Error())
+	}
+	log.Println("database connected successfully...")
+
+	app := Application{
+		config: &config.Config{
+			DB: conn,
+		},
 	}
 
-	log.Println("Database connected successfully...")
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", os.Getenv("PORT")),
+		Handler: app.routes(),
+	}
 
-	return conn, nil
+	if err := srv.ListenAndServe(); err != nil {
+		log.Println(err.Error())
+	}
+	log.Println("server running successfully")
+
+	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	_ "github.com/jackc/pgx/v5"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func ConnectToDatabase(dsn string) (*sql.DB, error) {
