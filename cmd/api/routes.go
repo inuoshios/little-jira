@@ -36,5 +36,7 @@ func (app *Application) routes() http.Handler {
 		w.Write(marshallResponse)
 	})
 
+	mux.Get("/get-users", app.handlers.GetUsers)
+
 	return mux
 }

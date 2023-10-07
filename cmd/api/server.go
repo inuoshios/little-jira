@@ -10,12 +10,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/inuoshios/little-jira/internal/config"
+	"github.com/inuoshios/little-jira/internal/controllers"
 	"github.com/inuoshios/little-jira/internal/database"
+	"github.com/inuoshios/little-jira/internal/services"
 )
 
 type Application struct {
-	config *config.Config
+	handlers *controllers.Handlers
 }
 
 func Server(app *Application) error {
@@ -26,9 +27,8 @@ func Server(app *Application) error {
 	}
 	log.Println("database connected successfully...")
 
-	app.config = &config.Config{
-		DB: conn,
-	}
+	app.handlers = controllers.NewHandler()
+	services.InitDB(conn)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", os.Getenv("PORT")),
