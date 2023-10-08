@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/inuoshios/little-jira/internal/models"
@@ -12,6 +13,24 @@ var db *sql.DB
 
 func InitDB(database *sql.DB) {
 	db = database
+}
+
+func CreateUser(user *models.User) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `insert into users
+	 (username, first_name, last_name, email, password)
+	 values ($1, $2, $3, $4, $5)
+	 returning id
+	`
+
+	err := db.QueryRowContext(ctx, query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&user.ID)
+	if err != nil {
+		return "", fmt.Errorf("error creating user: %w", err)
+	}
+
+	return user.ID, nil
 }
 
 func GetUsers() ([]*models.User, error) {
