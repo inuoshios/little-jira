@@ -36,6 +36,7 @@ func (app *Application) routes() http.Handler {
 		w.Write(marshallResponse)
 	})
 
+	mux.Post("/user/signup", app.handlers.CreateUser)
 	mux.Get("/get-users", app.handlers.GetUsers)
 
 	return mux

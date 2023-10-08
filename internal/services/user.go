@@ -20,12 +20,13 @@ func CreateUser(user *models.User) (string, error) {
 	defer cancel()
 
 	query := `insert into users
-	 (username, first_name, last_name, email, password)
-	 values ($1, $2, $3, $4, $5)
+	 (username, first_name, last_name, email, password, gender)
+	 values ($1, $2, $3, $4, $5, $6)
 	 returning id
 	`
 
-	err := db.QueryRowContext(ctx, query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&user.ID)
+	err := db.QueryRowContext(ctx, query,
+		user.Username, user.FirstName, user.LastName, user.Email, user.Password, user.Gender).Scan(&user.ID)
 	if err != nil {
 		return "", fmt.Errorf("error creating user: %w", err)
 	}
