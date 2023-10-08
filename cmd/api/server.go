@@ -25,7 +25,7 @@ func Server(app *Application) error {
 	if err != nil {
 		log.Fatalf("error connecting to DB %s", err.Error())
 	}
-	log.Println("database connected successfully...")
+	log.Println("database connected successfully... 🚀")
 
 	app.handlers = controllers.NewHandler()
 	services.InitDB(conn)
@@ -51,18 +51,18 @@ func Server(app *Application) error {
 			log.Printf("http server shutdown error %v", err)
 		}
 
-		log.Println("shutting down...")
+		log.Println("shutting down... 🛠️")
 		conn.Close()
 		close(idleConnectionClosed)
 	}()
 
-	log.Printf("server started at port %s", os.Getenv("PORT"))
+	log.Printf("server started at port %s ✅", os.Getenv("PORT"))
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err.Error())
 	}
 
 	<-idleConnectionClosed
-	log.Println("server shutdown successful")
+	log.Println("server shutdown successful 🤪")
 
 	return err
 }
