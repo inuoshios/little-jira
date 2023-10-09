@@ -34,20 +34,20 @@ func NewClaims(userId, username, email string, duration time.Duration) (*Cliams,
 }
 
 // GenerateToken generates a new JWT token
-func GenerateToken(userId, username, email string, duration time.Duration) (string, *Cliams, error) {
+func GenerateToken(userId, username, email string, duration time.Duration) (string, error) {
 	payload, err := NewClaims(userId, username, email, duration)
 	if err != nil {
-		return "", payload, fmt.Errorf("jwt error: %v", err)
+		return "", fmt.Errorf("jwt error: %v", err)
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 
 	signedStr, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
-		return "", payload, fmt.Errorf("error signing jwt token: %v", err)
+		return "", fmt.Errorf("error signing jwt token: %v", err)
 	}
 
-	return signedStr, payload, nil
+	return signedStr, nil
 }
 
 // VerifyToken verifies the JWT token that was generated

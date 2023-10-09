@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"database/sql"
 	"errors"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -67,6 +70,45 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 		"status":  "success",
 		"user_id": result,
 	})
+}
+
+func (h *Handlers) SignIn(w http.ResponseWriter, r *http.Request) {
+	var user models.Login
+	if err := resp.ReadJSON(w, r, &user); err != nil {
+		resp.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	result, err := services.GetUser(&user)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			resp.ErrorJSON(w, utils.ErrSqlNoRowsUser, http.StatusNotFound)
+			return
+		}
+		resp.ErrorJSON(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	if err := utils.ComparePasswords(result.Password, user.Password); err != nil {
+		resp.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	accessToken, err := utils.GenerateToken(result.ID, result.Username, result.Email, time.Duration(time.Hour*24))
+	if err != nil {
+		resp.ErrorJSON(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	result.Password = ""
+
+	resp.WriteJSON(w, http.StatusOK, map[string]any{
+		"access_token": accessToken,
+		"message":      "success",
+		"payload":      result,
+	})
+
+	log.Printf("%s logged in successfully", result.Email)
 }
 
 func (h *Handlers) GetUsers(w http.ResponseWriter, r *http.Request) {
