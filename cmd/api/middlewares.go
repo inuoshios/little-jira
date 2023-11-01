@@ -34,6 +34,7 @@ func Authenticate(next http.Handler) http.Handler {
 			payload, err := utils.VerifyToken(accesssToken)
 			if err != nil {
 				resp.ErrorJSON(w, fmt.Errorf("%w", err), http.StatusUnauthorized)
+				return
 			}
 
 			ctx := context.WithValue(context.Background(), "userId", payload.UserID)
