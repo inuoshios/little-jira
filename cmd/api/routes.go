@@ -33,7 +33,7 @@ func (app *Application) routes() http.Handler {
 		marshallResponse, _ := json.MarshalIndent(response, "", "\t")
 
 		w.WriteHeader(http.StatusOK)
-		w.Write(marshallResponse)
+		_, _ = w.Write(marshallResponse)
 	})
 
 	mux.Post("/user/signup", app.handlers.CreateUser)
@@ -48,6 +48,7 @@ func (app *Application) routes() http.Handler {
 	mux.Group(func(r chi.Router) {
 		r.Use(Authenticate)
 		r.Post("/user/board", app.handlers.CreateBoard)
+		r.Post("/user/board/column", app.handlers.CreateBoardColumn)
 	})
 
 	return mux

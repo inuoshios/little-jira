@@ -14,8 +14,8 @@ type jsonResponse struct {
 }
 
 func ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
-	// var maxBytes int64 = 1048576
-	// r.Body = http.MaxBytesReader(w, r.Body, maxBytes)
+	var maxBytes int64 = 1048576
+	r.Body = http.MaxBytesReader(w, r.Body, maxBytes)
 
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(data); err != nil {

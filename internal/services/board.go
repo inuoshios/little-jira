@@ -36,18 +36,18 @@ func CreateBoardColumn(boardColumn *models.BoardColumns) (string, error) {
 	return boardColumn.ID, nil
 }
 
-func GetBoard(payload *models.CreateBoard) (*models.CreateBoard, error) {
+func GetBoard(id string) (*models.CreateBoard, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `select id board_title from boards where id = $1`
 	var boards models.CreateBoard
 
-	if err := db.QueryRowContext(ctx, query, &payload.ID).Scan(boards.ID, boards.BoardTitle); err != nil {
+	if err := db.QueryRowContext(ctx, query, id).Scan(boards.ID, boards.BoardTitle); err != nil {
 		return nil, err
 	}
 
 	return &boards, nil
 }
 
-func GetBoardsWithBoardColums() {}
+//func GetBoardsWithBoardColumns() {}
