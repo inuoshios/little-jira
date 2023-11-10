@@ -38,10 +38,17 @@ func (app *Application) routes() http.Handler {
 
 	mux.Post("/user/signup", app.handlers.CreateUser)
 	mux.Post("/user/signin", app.handlers.SignIn)
-	mux.Get("/user/get-users", app.handlers.GetUsers)
+
+	mux.Group(func(r chi.Router) {
+		r.Use(Authenticate)
+		r.Get("/user/get-users", app.handlers.GetUsers)
+	})
 
 	// boards
-	mux.Post("/user/board", app.handlers.CreateBoard)
+	mux.Group(func(r chi.Router) {
+		r.Use(Authenticate)
+		r.Post("/user/board", app.handlers.CreateBoard)
+	})
 
 	return mux
 }

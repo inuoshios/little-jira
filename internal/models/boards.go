@@ -3,6 +3,7 @@ package models
 type (
 	CreateBoard struct {
 		ID           string         `json:"id"`
+		UserID       string         `json:"user_id"`
 		BoardTitle   string         `json:"board_title"`
 		BoardColumns []BoardColumns `json:"board_columns"`
 	}

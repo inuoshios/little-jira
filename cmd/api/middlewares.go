@@ -37,7 +37,7 @@ func Authenticate(next http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(context.Background(), "userId", payload.UserID)
+			ctx := context.WithValue(context.Background(), utils.AuthPayloadUserID, payload.UserID)
 			next.ServeHTTP(w, r.Clone(ctx))
 		},
 	)

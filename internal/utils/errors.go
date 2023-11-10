@@ -13,4 +13,5 @@ var (
 	ErrAuthHeader                = errors.New("authorization header not provided")
 	ErrInvalidAuthHeader         = errors.New("invalid authorization header format")
 	ErrUnsupportedAuthType       = errors.New("unsupported authorization type")
+	ErrAuthorizationError        = errors.New(("an error occured, please try again later"))
 )
