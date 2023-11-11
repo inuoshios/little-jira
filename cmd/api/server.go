@@ -52,7 +52,9 @@ func Server(app *Application) error {
 		}
 
 		log.Println("shutting down... 🛠️")
-		conn.Close()
+		if err = conn.Close(); err != nil {
+			log.Printf("error closing database connection %s", err.Error())
+		}
 		close(idleConnectionClosed)
 	}()
 

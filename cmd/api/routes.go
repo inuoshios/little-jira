@@ -51,5 +51,10 @@ func (app *Application) routes() http.Handler {
 		r.Post("/user/board/column", app.handlers.CreateBoardColumn)
 	})
 
+	// tasks
+	mux.Group(func(r chi.Router) {
+		r.Use(Authenticate)
+	})
+
 	return mux
 }
