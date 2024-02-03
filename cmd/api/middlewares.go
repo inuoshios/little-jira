@@ -15,25 +15,25 @@ func Authenticate(next http.Handler) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			authToken := r.Header.Get("Authorization")
 			if len(authToken) == 0 {
-				resp.ErrorJSON(w, utils.ErrAuthHeader, http.StatusUnauthorized)
+				_ = resp.ErrorJSON(w, utils.ErrAuthHeader, http.StatusUnauthorized)
 				return
 			}
 
 			bearerToken := strings.Split(authToken, " ")
 			if len(bearerToken) < 2 {
-				resp.ErrorJSON(w, utils.ErrInvalidAuthHeader, http.StatusUnauthorized)
+				_ = resp.ErrorJSON(w, utils.ErrInvalidAuthHeader, http.StatusUnauthorized)
 				return
 			}
 
 			if bearerToken[0] != "Bearer" {
-				resp.ErrorJSON(w, utils.ErrUnsupportedAuthType, http.StatusUnauthorized)
+				_ = resp.ErrorJSON(w, utils.ErrUnsupportedAuthType, http.StatusUnauthorized)
 				return
 			}
 
-			accesssToken := bearerToken[1]
-			payload, err := utils.VerifyToken(accesssToken)
+			accessToken := bearerToken[1]
+			payload, err := utils.VerifyToken(accessToken)
 			if err != nil {
-				resp.ErrorJSON(w, fmt.Errorf("%w", err), http.StatusUnauthorized)
+				_ = resp.ErrorJSON(w, fmt.Errorf("%w", err), http.StatusUnauthorized)
 				return
 			}
 

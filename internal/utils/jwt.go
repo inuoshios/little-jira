@@ -10,16 +10,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type Cliams struct {
+type Claims struct {
 	UserID   string `json:"user_id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func NewClaims(userId, username, email string, duration time.Duration) (*Cliams, error) {
+func NewClaims(userId, username, email string, duration time.Duration) (*Claims, error) {
 	id, _ := uuid.NewRandom()
-	claims := &Cliams{
+	claims := &Claims{
 		UserID:   userId,
 		Username: username,
 		Email:    email,
@@ -51,7 +51,7 @@ func GenerateToken(userId, username, email string, duration time.Duration) (stri
 }
 
 // VerifyToken verifies the JWT token that was generated
-func VerifyToken(tokenString string) (*Cliams, error) {
+func VerifyToken(tokenString string) (*Claims, error) {
 	keyFunc := func(token *jwt.Token) (any, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -59,7 +59,7 @@ func VerifyToken(tokenString string) (*Cliams, error) {
 		}
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	}
-	token, err := jwt.ParseWithClaims(tokenString, &Cliams{}, keyFunc)
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, keyFunc)
 	switch {
 	case errors.Is(err, jwt.ErrSignatureInvalid):
 		return nil, ErrSignatureInvalid
@@ -69,7 +69,7 @@ func VerifyToken(tokenString string) (*Cliams, error) {
 		return nil, ErrTokenNotValidYet
 	}
 
-	if claims, ok := token.Claims.(*Cliams); ok && token.Valid {
+	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, nil
 	}
 

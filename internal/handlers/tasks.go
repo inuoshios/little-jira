@@ -41,3 +41,7 @@ func CreateTasks(w http.ResponseWriter, r *http.Request) {
 		"subtask_ids": subTasksIDs,
 	})
 }
+
+func GetTasks(w http.ResponseWriter, r *http.Request) {
+
+}
