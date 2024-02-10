@@ -3,58 +3,42 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
 )
 
+type HandlerFunc func(w http.ResponseWriter, r *http.Request)
+
+func (h HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h(w, r)
+}
+
 func (app *Application) routes() http.Handler {
-	mux := chi.NewRouter()
+	mux := http.NewServeMux()
 
-	mux.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300,
-	}))
+	handler := AddContentType(mux)
 
-	mux.Use(middleware.Logger)
-	mux.Use(middleware.Heartbeat("/ping"))
-
-	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		response := map[string]string{
-			"author":          "Inu John",
-			"github_username": "https://github.com/inuoshios",
-			"message":         "little jira api...",
+			"author":     "inuoshios",
+			"github_url": "https://github.com/inuoshios",
+			"message":    "api is running...",
 		}
-		marshallResponse, _ := json.MarshalIndent(response, "", "\t")
+		marshalResponse, _ := json.MarshalIndent(response, "", "\t")
 
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write(marshallResponse)
+		_, err := w.Write(marshalResponse)
+		if err != nil {
+			http.Error(w, "An error occurred, please try again", http.StatusBadRequest)
+			return
+		}
 	})
 
-	mux.Post("/user/signup", app.handlers.CreateUser)
-	mux.Post("/user/signin", app.handlers.SignIn)
-
-	mux.Group(func(r chi.Router) {
-		r.Use(Authenticate)
-		r.Get("/user/get-users", app.handlers.GetUsers)
-	})
+	mux.HandleFunc("POST /user/signup", app.handlers.CreateUser)
+	mux.HandleFunc("POST /user/signin", app.handlers.SignIn)
+	mux.Handle("GET /user/get-users", Authenticate(HandlerFunc(app.handlers.GetUsers)))
 
 	// boards
-	mux.Group(func(r chi.Router) {
-		r.Use(Authenticate)
-		r.Post("/user/board", app.handlers.CreateBoard)
-		r.Post("/user/board/column", app.handlers.CreateBoardColumn)
-	})
+	mux.Handle("POST /user/board", Authenticate(HandlerFunc(app.handlers.CreateBoard)))
+	mux.Handle("POST /user/board/column", Authenticate(HandlerFunc(app.handlers.CreateBoardColumn)))
 
-	// tasks
-	mux.Group(func(r chi.Router) {
-		r.Use(Authenticate)
-	})
-
-	return mux
+	return handler
 }
