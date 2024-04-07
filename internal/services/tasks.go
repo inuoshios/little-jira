@@ -36,3 +36,11 @@ func CreateSubTasks(subTasks *models.SubTask) (string, error) {
 
 	return subTasks.ID, nil
 }
+
+func GetTasks() ([]*models.Task, error) {
+	// ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// defer cancel()
+
+	// // query :=  ``
+	return nil, fmt.Errorf("")
+}

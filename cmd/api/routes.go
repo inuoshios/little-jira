@@ -16,7 +16,7 @@ func (app *Application) routes() http.Handler {
 
 	handler := AddContentType(mux)
 
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /ping", func(w http.ResponseWriter, r *http.Request) {
 		response := map[string]string{
 			"author":     "inuoshios",
 			"github_url": "https://github.com/inuoshios",

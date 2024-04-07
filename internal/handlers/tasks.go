@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"net/http"
+
 	resp "github.com/inuoshios/little-jira/internal/helpers"
 	"github.com/inuoshios/little-jira/internal/models"
 	"github.com/inuoshios/little-jira/internal/services"
-	"net/http"
 )
 
 func CreateTasks(w http.ResponseWriter, r *http.Request) {
@@ -26,13 +27,10 @@ func CreateTasks(w http.ResponseWriter, r *http.Request) {
 	for _, subTask := range task.SubTasks {
 		subTaskID, err := services.CreateSubTasks(&subTask)
 		if err != nil {
-			if err != nil {
-				_ = resp.ErrorJSON(w, err, http.StatusBadRequest)
-				return
-			}
-
-			subTasksIDs = append(subTasksIDs, subTaskID)
+			_ = resp.ErrorJSON(w, err, http.StatusBadRequest)
+			return
 		}
+		subTasksIDs = append(subTasksIDs, subTaskID)
 	}
 
 	_ = resp.WriteJSON(w, http.StatusCreated, map[string]any{
@@ -43,5 +41,5 @@ func CreateTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTasks(w http.ResponseWriter, r *http.Request) {
-
+	// result, err := services.
 }
